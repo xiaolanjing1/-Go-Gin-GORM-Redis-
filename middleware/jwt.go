@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var Secret = []byte("别破解我的Secret")
+var Secret = []byte("你的Secret")
 
 func GenerateToken(Name string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
