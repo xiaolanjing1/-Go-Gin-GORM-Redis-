@@ -29,8 +29,6 @@ func SetupRouter() *gin.Engine {
 
 		auth.PUT("/password", controller.UpdatePassword)
 
-		auth.PUT("/delavatar", controller.Delavatar)
-
 		auth.POST("/avatar", controller.UploadAvatar)
 
 		auth.POST("/logout", controller.Logout)
