@@ -9,7 +9,7 @@ import (
 var Db *gorm.DB
 
 func InitDB() {
-	dsn := "root:llh1472586390@tcp(127.0.0.1:3306)/mygorm?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:your_password@tcp(127.0.0.1:3306)/mygorm?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
