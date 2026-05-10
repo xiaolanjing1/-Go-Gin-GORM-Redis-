@@ -2,6 +2,8 @@ package controller
 
 import (
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 	"user-system/config"
 	"user-system/middleware"
@@ -10,6 +12,103 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func UserList(c *gin.Context) {
+	var users []model.User
+	page := c.Query("page")
+	size := c.Query("size")
+	pageint, err := strconv.Atoi(page)
+	if err != nil {
+		pageint = 1
+	}
+	sizeint, err := strconv.Atoi(size)
+	if err != nil {
+		sizeint = 10
+	}
+	outpage := (pageint - 1) * sizeint
+	err = config.Db.Limit(sizeint).Offset(outpage).Find(&users).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "请求失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"page":  pageint,
+		"size":  sizeint,
+		"users": users,
+	})
+}
+
+func Delavatar(c *gin.Context) {
+	username, _ := c.Get("username")
+	var user model.User
+	err := config.Db.Where("name=?", username).First(&user).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "没有该用户",
+		})
+		return
+	}
+	if user.Avatar == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "该用户无上传头像",
+		})
+		return
+	}
+	path := "." + user.Avatar
+	err = os.Remove(path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "删除失败",
+		})
+		return
+	}
+	err = config.Db.Model(&user).Update("avatar", "").Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "更新失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "删除头像成功",
+	})
+}
+
+func Updateemial(c *gin.Context) {
+	username, _ := c.Get("username")
+	var req struct {
+		New_email string `json:"new_email"`
+		Old_email string `json:"old_email"`
+	}
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "参数错误",
+		})
+		return
+	}
+	var user model.User
+	err = config.Db.Where("name=?", username).First(&user).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "该用户不存在",
+		})
+		return
+	}
+	if user.Email != req.Old_email {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "邮箱错误",
+		})
+		return
+	}
+	user.Email = req.New_email
+	config.Db.Model(&user).Update("email", req.New_email)
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "修改邮箱成功",
+	})
+}
 
 func Logout(c *gin.Context) {
 	token := c.GetHeader("Authorization")
