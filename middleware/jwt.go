@@ -32,7 +32,6 @@ func JWTAuth() gin.HandlerFunc {
 				"error": "token失效",
 			})
 			c.Abort()
-			return
 		}
 		if tokenstring == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
