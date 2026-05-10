@@ -1,0 +1,9 @@
+basePath: /
+host: localhost:9090
+info:
+  contact: {}
+  description: Go Gin 用户中心接口文档
+  title: User System API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
