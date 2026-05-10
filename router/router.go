@@ -23,13 +23,19 @@ func SetupRouter() *gin.Engine {
 
 		auth.GET("/profile", controller.UserProfile)
 
+		auth.GET("/users", controller.UserList)
+
 		auth.PUT("/update", controller.UpdateUser)
 
 		auth.PUT("/password", controller.UpdatePassword)
 
+		auth.PUT("/delavatar", controller.Delavatar)
+
 		auth.POST("/avatar", controller.UploadAvatar)
 
 		auth.POST("/logout", controller.Logout)
+
+		auth.POST("/updateemail", controller.Updateemial)
 	}
 	return r
 }
