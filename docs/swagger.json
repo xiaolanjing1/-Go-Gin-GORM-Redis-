@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:9090",
+    "host": "vmhost:9090",
     "basePath": "/",
     "paths": {}
 }
