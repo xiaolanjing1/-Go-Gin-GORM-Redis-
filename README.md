@@ -1,6 +1,6 @@
 # Go User System
 
-一个基于 Go + Gin + Gorm + MySQL + Docker 的用户系统。
+一个基于 Go + Gin + Gorm + MySQL + Redis + Docker 的用户系统。
 
 ## Tech Stack
 
@@ -8,6 +8,7 @@
 - Gin
 - Gorm
 - MySQL
+- Redis
 - Docker
 
 ## Features
