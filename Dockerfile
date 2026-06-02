@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY  . .
 
-RUN COG_ENABLED=0 go build -o main .
+RUN CGO_ENABLED=0 go build -o main .
 
 FROM alpine:latest
 
