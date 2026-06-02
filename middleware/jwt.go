@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var Secret = []byte("JWT_SECRET")
+var Secret = []byte(config.GetEnv("JWT_SECRET", ""))
 
 func GenerateToken(Name string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
