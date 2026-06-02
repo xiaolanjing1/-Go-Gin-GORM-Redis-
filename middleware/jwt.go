@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var Secret = []byte("你的Secret")
+var Secret = []byte("JWT_SECRET")
 
 func GenerateToken(Name string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -23,6 +23,13 @@ func GenerateToken(Name string) (string, error) {
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenstring := c.GetHeader("Authorization")
+		if tokenstring == "" {
+			c.JSON(401, gin.H{
+				"error": "token为空",
+			})
+			c.Abort()
+			return
+		}
 		_, err := config.RDB.Get(
 			config.Ctx,
 			tokenstring,
@@ -30,12 +37,6 @@ func JWTAuth() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(401, gin.H{
 				"error": "token失效",
-			})
-			c.Abort()
-		}
-		if tokenstring == "" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "未登录",
 			})
 			c.Abort()
 			return
@@ -55,6 +56,8 @@ func JWTAuth() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "claim断言失败",
 			})
+			c.Abort()
+			return
 		}
 		username := claim["name"]
 		c.Set("username", username)

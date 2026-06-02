@@ -12,6 +12,6 @@ var Ctx = context.Background()
 
 func InitRedis() {
 	RDB = redis.NewClient(&redis.Options{
-		Addr: "vmhost:6379",
+		Addr: "REDIS_ADDR:6379",
 	})
 }
