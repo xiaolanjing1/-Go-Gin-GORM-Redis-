@@ -1,32 +1,35 @@
- services:                    # 定义三个容器
-    mysql:                     # 第一个服务叫 mysql
-      image: mysql:latest         # 直接从 Docker Hub 拉 MySQL 8.0 镜像
-      container_name: user-mysql  # 给容器起个固定名字，方便管理
-      environment:
-        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # ← ${} 语法：从 .env 文件读
-        MYSQL_DATABASE: mygorm              # MySQL启动时自动建这个库
-      ports:
-        - "3306:3306"          # 把容器的3306映射到宿主机3306
-      volumes:
-        - mysql_data:/var/lib/mysql  # 数据持久化！容器删了数据还在
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: user-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: mygorm
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
-    redis:
-      image: redis:latest    # alpine = 精简版镜像，很小
-      container_name: user-redis
-      ports:
-        - "6379:6379"
+  redis:
+    image: redis:7-alpine
+    container_name: user-redis
+    ports:
+      - "6379:6379"
 
-    app:
-      build: .                 # 不是拉镜像，是用当前目录的 Dockerfile 构建
-      container_name: user-app
-      ports:
-        - "9090:9090"
-      environment:             # 这些环境变量会传进 Go 程序
-        DB_HOST: mysql         # ← 关键！写的是服务名 mysql，不是 vmhost
-        REDIS_ADDR: redis:6379 # ← 写的是服务名 redis
-        DB_USER: ${DB_USER}    # ← 从 .env 读
-        DB_PASSWORD: ${DB_PASSWORD}
-        JWT_SECRET: ${JWT_SECRET}
-      depends_on:              # 启动顺序：先 mysql 和 redis，再启动 app
-        - mysql
-        - redis               # 这个卷存 MySQL 数据，容器删了数据不会丢
+  app:
+    build: .
+    container_name: user-app
+    ports:
+      - "9090:9090"
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: mysql
+      REDIS_ADDR: redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - mysql
+      - redis
+
+volumes:
+  mysql_data:
